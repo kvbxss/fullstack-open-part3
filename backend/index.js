@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-// Define the phonebook entries array
+app.use(express.json());
 const phonebookEntries = [
   {
     id: 1,
@@ -25,12 +25,10 @@ const phonebookEntries = [
   },
 ];
 
-// Route handler for getting all phonebook entries
 app.get("/api/persons", (request, response) => {
   response.json(phonebookEntries);
 });
 
-// Route handler for getting a specific phonebook entry by ID
 app.get("/api/persons/:id", (request, response) => {
   const id = parseInt(request.params.id);
   const entry = phonebookEntries.find((entry) => entry.id === id);
@@ -59,9 +57,21 @@ app.delete("/api/persons/:id", (request, response) => {
     response.status(404).json({ error: "Entry not found" });
   } else {
     phonebookEntries.splice(index, 1);
-    response.status(204).end(); // Respond with status code 204 (No Content) to indicate successful deletion
+    response.status(204).end();
   }
 });
+
+app.post("/api/persons", (request, response) => {
+  const newEntry = request.body;
+  newEntry.id = generateRandomId();
+
+  phonebookEntries.push(newEntry);
+  response.status(201).json(newEntry);
+});
+
+function generateRandomId() {
+  return Math.floor(Math.random() * 100000) + 1;
+}
 
 const PORT = 3001;
 app.listen(PORT, () => {
