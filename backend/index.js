@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 
 app.use(express.json());
+
 const phonebookEntries = [
   {
     id: 1,
@@ -63,8 +64,26 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons", (request, response) => {
   const newEntry = request.body;
-  newEntry.id = generateRandomId();
 
+  // Check if name or number is missing
+  if (!newEntry.name || !newEntry.number) {
+    response.status(400).json({ error: "Name and number are required fields" });
+    return;
+  }
+
+  // Check if the name already exists in the phonebook
+  const existingEntry = phonebookEntries.find(
+    (entry) => entry.name === newEntry.name
+  );
+  if (existingEntry) {
+    response
+      .status(409)
+      .json({ error: "Name already exists in the phonebook" });
+    return;
+  }
+
+  // Generate a random ID and add the new entry
+  newEntry.id = generateRandomId();
   phonebookEntries.push(newEntry);
   response.status(201).json(newEntry);
 });
