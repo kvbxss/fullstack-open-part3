@@ -51,6 +51,18 @@ app.get("/info", (request, response) => {
   response.send(info);
 });
 
+app.delete("/api/persons/:id", (request, response) => {
+  const id = parseInt(request.params.id);
+  const index = phonebookEntries.findIndex((entry) => entry.id === id);
+
+  if (index === -1) {
+    response.status(404).json({ error: "Entry not found" });
+  } else {
+    phonebookEntries.splice(index, 1);
+    response.status(204).end(); // Respond with status code 204 (No Content) to indicate successful deletion
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
