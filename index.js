@@ -1,44 +1,16 @@
-const express = require("express");
-const app = express();
-
-app.use(express.json());
-
-const phonebookEntries = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+require("dotenv").config();
+const Person = require("./models/person");
 
 app.get("/api/persons", (request, response) => {
-  response.json(phonebookEntries);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = parseInt(request.params.id);
-  const entry = phonebookEntries.find((entry) => entry.id === id);
-
-  if (!entry) {
-    response.status(404).json({ error: "Entry not found" });
-  } else {
-    response.json(entry);
-  }
+  Person.findById(request.params.id).then((person) => {
+    response.json(person);
+  });
 });
 
 app.get("/info", (request, response) => {
@@ -63,36 +35,23 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
-  const newEntry = request.body;
+  const body = request.body;
 
-  // Check if name or number is missing
-  if (!newEntry.name || !newEntry.number) {
-    response.status(400).json({ error: "Name and number are required fields" });
-    return;
+  if (body.content === undefined) {
+    return response.status(400).json({ error: "content missing" });
   }
 
-  // Check if the name already exists in the phonebook
-  const existingEntry = phonebookEntries.find(
-    (entry) => entry.name === newEntry.name
-  );
-  if (existingEntry) {
-    response
-      .status(409)
-      .json({ error: "Name already exists in the phonebook" });
-    return;
-  }
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  });
 
-  // Generate a random ID and add the new entry
-  newEntry.id = generateRandomId();
-  phonebookEntries.push(newEntry);
-  response.status(201).json(newEntry);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
-function generateRandomId() {
-  return Math.floor(Math.random() * 100000) + 1;
-}
-
-const PORT = 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
