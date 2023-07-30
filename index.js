@@ -28,15 +28,11 @@ app.get("/info", (request, response) => {
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = parseInt(request.params.id);
-  const index = phonebookEntries.findIndex((entry) => entry.id === id);
-
-  if (index === -1) {
-    response.status(404).json({ error: "Entry not found" });
-  } else {
-    phonebookEntries.splice(index, 1);
-    response.status(204).end();
-  }
+  Person.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
