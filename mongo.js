@@ -7,7 +7,7 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2];
 
-const uri = `mongodb+srv://fullstack:${password}@fs-open.2o5bna5.mongodb.net/?retryWrites=true&w=majority`;
+const uri = process.env.MONGODB_URI;
 
 mongoose.set("strictQuery", false);
 mongoose.connect(uri);
