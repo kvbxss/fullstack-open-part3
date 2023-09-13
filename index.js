@@ -49,15 +49,6 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.get("/info", (request, response) => {
-  const info = `
-    <p>Phonebook has info for ${phonebookEntries.length} people</p>
-    <br/>
-    <p>${new Date()}</p>
-  `;
-  response.send(info);
-});
-
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
     .then((result) => {
