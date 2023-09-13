@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 if (process.argv.length < 3) {
   console.log("give password as argument");
@@ -14,7 +15,7 @@ mongoose.connect(uri);
 
 const personSchema = new mongoose.Schema({
   name: String,
-  number: Number,
+  number: String,
 });
 
 const Person = mongoose.model("Person", personSchema);
@@ -29,12 +30,10 @@ person.save().then((result) => {
   mongoose.connection.close();
 });
 
-if (process.argv.length === 3) {
-  Person.find({}).then((result) => {
-    console.log("phonebook:");
-    result.forEach((person) => {
-      console.log(person.name, person.number);
-    });
-    mongoose.connection.close();
+Person.find({}).then((result) => {
+  console.log("phonebook:");
+  result.forEach((person) => {
+    console.log(person.name, person.number);
   });
-}
+  mongoose.connection.close();
+});

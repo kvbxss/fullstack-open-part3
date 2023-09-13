@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 mongoose.set("strictQuery", false);
 
@@ -8,7 +9,7 @@ console.log("connecting to", uri);
 
 mongoose
   .connect(uri)
-  .then((result) => {
+  .then(() => {
     console.log("connected to MongoDB");
   })
   .catch((error) => {
@@ -17,7 +18,7 @@ mongoose
 
 const personSchema = new mongoose.Schema({
   name: String,
-  number: Number,
+  number: String,
 });
 
 personSchema.set("toJSON", {
